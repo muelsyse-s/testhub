@@ -1,0 +1,45 @@
+# ---- Java / Maven ----
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+*.log
+.mvn/timing.properties
+
+# ---- IDE ----
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+.settings/
+.project
+.classpath
+
+# ---- Node / 前端 ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- 数据库与本地产物 ----
+*.mv.db
+*.trace.db
+h2/
+logs/
+
+# ---- 操作系统 ----
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ---- 其他 ----
+.tools/
+_gen/
+.dsh-office-*/
+*.pyc
+__pycache__/
