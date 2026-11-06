@@ -217,6 +217,29 @@ mvn test
 > - 使用 Spring Security + JWT 实现 RBAC 四角色权限，MyBatis-Plus 完成分页与逻辑删除，并用 Spring Boot Test + MockMvc 编写认证与越权场景的自动化测试；
 > - 通过质量报表将覆盖率、通过率、缺陷分布等指标自动聚合，替代人工统计，单轮回归由 3 小时缩短到分钟级。
 
+## 上传到 GitHub
+
+仓库已按模块整理为 15 个语义化提交，并提供了推送脚本：
+
+```powershell
+# 交互式：传用户名与仓库名即可（HTTPS）
+.\scripts\push-to-github.ps1 -User <你的用户名> -Repo testhub
+
+# 使用 SSH
+.\scripts\push-to-github.ps1 -User <你的用户名> -Repo testhub -Protocol ssh
+
+# 传入完整仓库地址
+.\scripts\push-to-github.ps1 -RepoUrl https://github.com/<你的用户名>/testhub.git
+
+# 已安装 gh CLI 并登录时，可顺带创建仓库（默认公开，-PrivateRepo 为私有）
+.\scripts\push-to-github.ps1 -User <你的用户名> -Repo testhub -CreateWithGh
+
+# 只做检查、不实际推送
+.\scripts\push-to-github.ps1 -User <你的用户名> -Repo testhub -DryRun
+```
+
+脚本会依次：检查 git 环境与工作区状态 → 解析并绑定 `origin` → 推送当前分支 → 打印仓库地址与最近提交。
+
 ## 文档
 
 | 文档 | 说明 |
