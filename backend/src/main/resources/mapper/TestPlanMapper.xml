@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testhub.testplan.mapper.TestPlanMapper">
+
+    <resultMap id="PlanCaseMap" type="com.testhub.testplan.dto.PlanCaseVO">
+        <result column="plan_case_id" property="planCaseId"/>
+        <result column="plan_id" property="planId"/>
+        <result column="case_id" property="caseId"/>
+        <result column="case_no" property="caseNo"/>
+        <result column="title" property="title"/>
+        <result column="priority" property="priority"/>
+        <result column="case_type" property="caseType"/>
+        <result column="assignee_name" property="assigneeName"/>
+        <result column="last_result" property="lastResult"/>
+        <result column="last_executed_at" property="lastExecutedAt"/>
+        <result column="exec_count" property="execCount"/>
+    </resultMap>
+
+    <select id="selectPlanCases" resultMap="PlanCaseMap">
+        SELECT
+            pc.id            AS plan_case_id,
+            pc.plan_id       AS plan_id,
+            pc.case_id       AS case_id,
+            c.case_no        AS case_no,
+            c.title          AS title,
+            c.priority       AS priority,
+            c.case_type      AS case_type,
+            pc.assignee_name AS assignee_name,
+            (SELECT e.result FROM test_execution e
+              WHERE e.plan_id = pc.plan_id AND e.case_id = pc.case_id AND e.deleted = 0
+              ORDER BY e.id DESC LIMIT 1) AS last_result,
+            (SELECT e.executed_at FROM test_execution e
+              WHERE e.plan_id = pc.plan_id AND e.case_id = pc.case_id AND e.deleted = 0
+              ORDER BY e.id DESC LIMIT 1) AS last_executed_at,
+            (SELECT COUNT(*) FROM test_execution e
+              WHERE e.plan_id = pc.plan_id AND e.case_id = pc.case_id AND e.deleted = 0) AS exec_count
+        FROM plan_case pc
+        INNER JOIN test_case c ON c.id = pc.case_id AND c.deleted = 0
+        WHERE pc.plan_id = #{planId} AND pc.deleted = 0
+        ORDER BY pc.sort_no ASC, pc.id ASC
+    </select>
+</mapper>
