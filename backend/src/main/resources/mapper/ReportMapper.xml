@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.testhub.report.mapper.ReportMapper">
+
+    <resultMap id="TrendMap" type="com.testhub.report.dto.TrendItem">
+        <result column="stat_date" property="statDate"/>
+        <result column="total" property="total"/>
+        <result column="pass_count" property="passCount"/>
+        <result column="fail_count" property="failCount"/>
+    </resultMap>
+
+    <resultMap id="NameValueMap" type="com.testhub.report.dto.NameValue">
+        <result column="name" property="name"/>
+        <result column="cnt" property="value"/>
+    </resultMap>
+
+    <resultMap id="ModuleMap" type="com.testhub.report.dto.ModuleCoverage">
+        <result column="module" property="module"/>
+        <result column="point_count" property="pointCount"/>
+        <result column="case_count" property="caseCount"/>
+    </resultMap>
+
+    <resultMap id="WorkloadMap" type="com.testhub.report.dto.MemberWorkload">
+        <result column="name" property="name"/>
+        <result column="executed" property="executed"/>
+        <result column="pass_count" property="passCount"/>
+        <result column="fail_count" property="failCount"/>
+    </resultMap>
+
+    <!-- 每日执行趋势 -->
+    <select id="selectExecutionTrend" resultMap="TrendMap">
+        SELECT CAST(e.executed_at AS DATE) AS stat_date,
+               COUNT(*) AS total,
+               SUM(CASE WHEN e.result = 'PASS' THEN 1 ELSE 0 END) AS pass_count,
+               SUM(CASE WHEN e.result = 'FAIL' THEN 1 ELSE 0 END) AS fail_count
+        FROM test_execution e
+        WHERE e.deleted = 0
+          AND e.executed_at IS NOT NULL
+        <if test="projectId != null">
+            AND e.project_id = #{projectId}
+        </if>
+        <if test="startTime != null">
+            AND e.executed_at &gt;= #{startTime}
+        </if>
+        GROUP BY CAST(e.executed_at AS DATE)
+        ORDER BY stat_date
+    </select>
+
+    <!-- 用例优先级分布 -->
+    <select id="selectCasePriority" resultMap="NameValueMap">
+        SELECT c.priority AS name, COUNT(*) AS cnt
+        FROM test_case c
+        WHERE c.deleted = 0
+        <if test="projectId != null">
+            AND c.project_id = #{projectId}
+        </if>
+        GROUP BY c.priority
+        ORDER BY cnt DESC
+    </select>
+
+    <!-- 用例类型分布 -->
+    <select id="selectCaseType" resultMap="NameValueMap">
+        SELECT c.case_type AS name, COUNT(*) AS cnt
+        FROM test_case c
+        WHERE c.deleted = 0
+        <if test="projectId != null">
+            AND c.project_id = #{projectId}
+        </if>
+        GROUP BY c.case_type
+        ORDER BY cnt DESC
+    </select>
+
+    <!-- 缺陷严重程度分布 -->
+    <select id="selectDefectSeverity" resultMap="NameValueMap">
+        SELECT d.severity AS name, COUNT(*) AS cnt
+        FROM defect d
+        WHERE d.deleted = 0
+        <if test="projectId != null">
+            AND d.project_id = #{projectId}
+        </if>
+        GROUP BY d.severity
+        ORDER BY cnt DESC
+    </select>
+
+    <!-- 缺陷状态分布 -->
+    <select id="selectDefectStatus" resultMap="NameValueMap">
+        SELECT d.status AS name, COUNT(*) AS cnt
+        FROM defect d
+        WHERE d.deleted = 0
+        <if test="projectId != null">
+            AND d.project_id = #{projectId}
+        </if>
+        GROUP BY d.status
+        ORDER BY cnt DESC
+    </select>
+
+    <!-- 模块覆盖：测试点数与关联用例数 -->
+    <select id="selectModuleCoverage" resultMap="ModuleMap">
+        SELECT p.module AS module,
+               COUNT(DISTINCT p.id) AS point_count,
+               COUNT(c.id) AS case_count
+        FROM test_point p
+        LEFT JOIN test_case c ON c.test_point_id = p.id AND c.deleted = 0
+        WHERE p.deleted = 0
+        <if test="projectId != null">
+            AND p.project_id = #{projectId}
+        </if>
+        GROUP BY p.module
+        ORDER BY point_count DESC
+    </select>
+
+    <!-- 成员执行工作量 -->
+    <select id="selectWorkload" resultMap="WorkloadMap">
+        SELECT e.executor_name AS name,
+               COUNT(*) AS executed,
+               SUM(CASE WHEN e.result = 'PASS' THEN 1 ELSE 0 END) AS pass_count,
+               SUM(CASE WHEN e.result = 'FAIL' THEN 1 ELSE 0 END) AS fail_count
+        FROM test_execution e
+        WHERE e.deleted = 0
+        <if test="projectId != null">
+            AND e.project_id = #{projectId}
+        </if>
+        GROUP BY e.executor_name
+        ORDER BY executed DESC
+    </select>
+</mapper>
