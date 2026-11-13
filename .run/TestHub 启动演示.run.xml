@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TestHub 启动演示" type="CompoundRunConfigurationType">
+    <toRun name="TestHub 后端" type="SpringBootApplicationConfigurationType" />
+    <toRun name="TestHub 前端" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>

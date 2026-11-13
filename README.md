@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # TestHub · 测试资产管理系统
 
@@ -246,6 +246,7 @@ mvn test
 |---|---|
 | [docs/数据库设计.md](docs/数据库设计.md) | 14 张表的数据字典与核心链路 |
 | [docs/接口说明.md](docs/接口说明.md) | 接口清单与关键请求示例 |
+| [docs/IDEA启动说明.md](docs/IDEA启动说明.md) | 在 IntelliJ IDEA 中一键启动与演示路线 |
 | [docs/部署说明.md](docs/部署说明.md) | 三种部署方式与环境变量 |
 | [docs/项目说明.md](docs/项目说明.md) | 交付物清单与报告结构 |
 
